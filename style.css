@@ -126,3 +126,30 @@ h1 {
     .bottom-bar { background: #2d2d2d; }
     .currency-row { border-bottom-color: #444; }
 }
+.menu-btn {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 12px;
+}
+
+.badge {
+    background-color: #ff4444;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+    margin-left: 8px;
+}
+
+/* Адаптация для тёмной темы */
+@media (prefers-color-scheme: dark) {
+    .badge {
+        background-color: #ff6666;
+        color: #1a1a1a;
+    }
+}
