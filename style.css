@@ -1,0 +1,128 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 16px;
+    background: #f8f9fa;
+    color: #202124;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 70px;
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+.currency-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.currency-card h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.currency-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.currency-row:last-child {
+    border-bottom: none;
+}
+
+.rate {
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+.update-time {
+    margin: 8px 0 0 0;
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.menu-btn {
+    background: white;
+    border: none;
+    border-radius: 12px;
+    padding: 20px 12px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e3a8a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.menu-btn:active {
+    transform: translateY(0);
+}
+
+.menu-btn.full-width {
+    grid-column: span 2;
+    background-color: #e8f0fe;
+}
+
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 16px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.bottom-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #1e3a8a;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.bottom-btn:hover {
+    background: #f0f0f0;
+}
+
+@media (prefers-color-scheme: dark) {
+    body { background: #1a1a1a; color: #e0e0e0; }
+    .currency-card { background: #2d2d2d; }
+    .menu-btn { background: #2d2d2d; color: #e0e0e0; }
+    .menu-btn.full-width { background: #1e3a8a; color: white; }
+    .bottom-bar { background: #2d2d2d; }
+    .currency-row { border-bottom-color: #444; }
+}

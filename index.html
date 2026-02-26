@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экспортный навигатор</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🚢 Экспортный навигатор</h1>
+        
+        <!-- Виджет курсов валют -->
+        <div class="currency-card" id="currency-widget">
+            <h3>💱 Курсы валют ЦБ РФ</h3>
+            <div class="currency-row">
+                <span>🇺🇸 USD</span>
+                <span class="rate" id="usd-rate">загрузка...</span>
+            </div>
+            <div class="currency-row">
+                <span>🇪🇺 EUR</span>
+                <span class="rate" id="eur-rate">загрузка...</span>
+            </div>
+            <div class="currency-row">
+                <span>🇨🇳 CNY</span>
+                <span class="rate" id="cny-rate">загрузка...</span>
+            </div>
+            <p class="update-time" id="update-time"></p>
+        </div>
+
+        <!-- Сетка из 7 кнопок -->
+        <div class="menu-grid">
+            <button class="menu-btn" data-section="chat">👥 Чат экспортёров</button>
+            <button class="menu-btn" data-section="news">📰 Лента новостей</button>
+            <button class="menu-btn" data-section="knowledge">📚 База знаний</button>
+            <button class="menu-btn" data-section="catalog">📦 Каталог продукции</button>
+            <button class="menu-btn" data-section="logistics">🚚 Логистика</button>
+            <button class="menu-btn" data-section="insurance">🛡️ Страхование</button>
+            <button class="menu-btn full-width" data-section="feedback">💬 Обратная связь</button>
+        </div>
+
+        <!-- Нижняя панель -->
+        <div class="bottom-bar">
+            <button class="bottom-btn" id="back-btn">↩️ Назад</button>
+            <button class="bottom-btn" id="ai-btn">🤖 Спросить ИИ</button>
+            <button class="bottom-btn" id="report-btn">📞 Связь с админом</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
