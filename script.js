@@ -87,7 +87,7 @@ function navigateTo(page) {
     }
 }
 
-// --- Раздел новостей ---
+// --- Раздел новостей (обновлённый) ---
 function renderNewsPage() {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = `
@@ -97,6 +97,7 @@ function renderNewsPage() {
             <button class="source-btn" onclick="loadNews('exportcenter')">🇷🇺 Российский экспортный центр</button>
             <button class="source-btn" onclick="loadNews('myexport')">🌐 Платформа «Мой экспорт»</button>
             <button class="source-btn" onclick="loadNews('nn')">🏛 Правительство Нижегородской области</button>
+            <button class="source-btn" onclick="loadNews('telegram')">📢 Новости российского экспорта (Telegram)</button>
             <div id="news-list"></div>
         </div>
     `;
@@ -120,21 +121,61 @@ async function loadNews(source) {
         ];
         displayNews(demoNews);
         return;
+    } else if (source === 'telegram') {
+        // Используем RSSHub для Telegram-канала
+        url = 'https://rsshub.app/telegram/channel/rusexportnews.json';
     }
 
     try {
         const response = await fetch(url);
         const data = await response.json();
-        if (data.status === 'ok') {
-            displayNews(data.items);
+        
+        // Обрабатываем данные в зависимости от источника
+        if (source === 'telegram') {
+            // Формат RSSHub: data.items - массив новостей
+            if (data.items && data.items.length > 0) {
+                displayTelegramNews(data.items);
+            } else {
+                newsDiv.innerHTML = 'Не удалось загрузить новости из Telegram.';
+            }
         } else {
-            newsDiv.innerHTML = 'Не удалось загрузить новости.';
+            // Формат rss2json
+            if (data.status === 'ok') {
+                displayNews(data.items);
+            } else {
+                newsDiv.innerHTML = 'Не удалось загрузить новости.';
+            }
         }
     } catch (e) {
+        console.error(e);
         newsDiv.innerHTML = 'Ошибка загрузки. Проверьте интернет-соединение.';
     }
 }
 
+function displayTelegramNews(items) {
+    const newsDiv = document.getElementById('news-list');
+    let html = '';
+    items.slice(0, 15).forEach(item => {
+        // Извлекаем текст поста, очищаем от лишних тегов
+        let description = item.description || item.content || '';
+        description = description.replace(/<[^>]+>/g, '').substring(0, 200);
+        if (description.length >= 200) description += '...';
+        
+        // Ссылка на пост в Telegram
+        const link = item.link || `https://t.me/rusexportnews/${item.guid || ''}`;
+        
+        html += `
+            <div class="news-item">
+                <a href="${link}" target="_blank">${item.title || 'Новость'}</a>
+                <p>${description}</p>
+                <small>${new Date(item.pubDate).toLocaleDateString('ru-RU')}</small>
+            </div>
+        `;
+    });
+    newsDiv.innerHTML = html;
+}
+
+// Существующая функция displayNews остаётся без изменений
 function displayNews(items) {
     const newsDiv = document.getElementById('news-list');
     let html = '';
