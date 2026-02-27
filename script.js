@@ -1,10 +1,44 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-// Состояние приложения
 let currentPage = 'menu';
+let surveyAnswers = {};
+let currentQuestionIndex = 0;
 
-// Основная функция рендеринга
+// Вопросы опроса
+const surveyQuestions = [
+    {
+        id: 'q1',
+        text: 'Как часто вы сталкиваетесь с проблемами при экспорте?',
+        type: 'single',
+        options: ['Часто', 'Иногда', 'Редко', 'Никогда']
+    },
+    {
+        id: 'q2',
+        text: 'Какие основные трудности вы испытываете? (можно выбрать несколько)',
+        type: 'multiple',
+        options: ['Логистика', 'Сертификация', 'Поиск партнёров', 'Финансы/кредиты', 'Таможенное оформление', 'Юридические вопросы']
+    },
+    {
+        id: 'q3',
+        text: 'Оцените удобство текущих мер поддержки экспорта (от 1 до 5)',
+        type: 'rating',
+        options: ['1', '2', '3', '4', '5']
+    },
+    {
+        id: 'q4',
+        text: 'Чего не хватает в системе поддержки экспортёров? (открытый ответ)',
+        type: 'text'
+    },
+    {
+        id: 'q5',
+        text: 'Какой формат помощи для вас наиболее полезен?',
+        type: 'single',
+        options: ['Консультации', 'Финансовая поддержка', 'Обучение', 'Поиск партнёров', 'Помощь с документами']
+    }
+];
+
+// Главное меню
 function renderMainMenu() {
     document.getElementById('app').innerHTML = `
         <div class="menu-grid">
@@ -21,7 +55,7 @@ function renderMainMenu() {
     currentPage = 'menu';
 }
 
-// Навигация по разделам
+// Навигация
 function navigateTo(page) {
     switch(page) {
         case 'chat':
@@ -115,7 +149,7 @@ function displayNews(items) {
     newsDiv.innerHTML = html;
 }
 
-// --- Раздел базы знаний (заглушка) ---
+// --- База знаний (заглушка) ---
 function renderKnowledgePage() {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = `
@@ -137,11 +171,10 @@ function searchKnowledge() {
         resultsDiv.innerHTML = 'Введите запрос.';
         return;
     }
-    // Заглушка (можно заменить на реальный поиск по JSON)
     resultsDiv.innerHTML = '🔍 Результаты поиска (заглушка). В разработке.';
 }
 
-// --- Разделы-заглушки ---
+// --- Каталог (заглушка) ---
 function renderCatalogPage() {
     document.getElementById('app').innerHTML = `
         <div class="page">
@@ -153,6 +186,7 @@ function renderCatalogPage() {
     currentPage = 'catalog';
 }
 
+// --- Логистика (заглушка) ---
 function renderLogisticsPage() {
     document.getElementById('app').innerHTML = `
         <div class="page">
@@ -164,6 +198,7 @@ function renderLogisticsPage() {
     currentPage = 'logistics';
 }
 
+// --- Страхование (заглушка) ---
 function renderInsurancePage() {
     document.getElementById('app').innerHTML = `
         <div class="page">
@@ -173,33 +208,6 @@ function renderInsurancePage() {
         </div>
     `;
     currentPage = 'insurance';
-}
-
-// --- Обратная связь ---
-function renderFeedbackPage() {
-    document.getElementById('app').innerHTML = `
-        <div class="page">
-            <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
-            <h2>💬 Обратная связь</h2>
-            <textarea class="feedback-textarea" id="feedback-message" placeholder="Напишите ваше сообщение..."></textarea>
-            <button class="send-btn" onclick="sendFeedback()">Отправить</button>
-        </div>
-    `;
-    currentPage = 'feedback';
-}
-
-function sendFeedback() {
-    const message = document.getElementById('feedback-message').value;
-    if (!message) {
-        tg.showAlert('Введите сообщение.');
-        return;
-    }
-    tg.sendData(JSON.stringify({
-        action: 'feedback',
-        message: message
-    }));
-    tg.showAlert('✅ Сообщение отправлено администратору.');
-    renderMainMenu();
 }
 
 // --- AI-ассистент ---
@@ -230,7 +238,133 @@ function askAI() {
     renderMainMenu();
 }
 
-// --- Обработка кнопки "Назад" ---
+// --- ОБРАТНАЯ СВЯЗЬ (обновлено) ---
+function renderFeedbackPage() {
+    const appDiv = document.getElementById('app');
+    appDiv.innerHTML = `
+        <div class="page">
+            <button class="back-btn" onclick="renderMainMenu()">← Назад</button>
+            <h2>💬 Обратная связь</h2>
+            <button class="menu-btn full-width" onclick="renderSurveyMenu()">📝 Пройти опрос</button>
+            <button class="menu-btn full-width" onclick="renderAdminContact()">📞 Связаться с администратором</button>
+        </div>
+    `;
+    currentPage = 'feedback';
+}
+
+function renderSurveyMenu() {
+    surveyAnswers = {};
+    currentQuestionIndex = 0;
+    renderQuestion();
+}
+
+function renderQuestion() {
+    if (currentQuestionIndex >= surveyQuestions.length) {
+        submitSurvey();
+        return;
+    }
+    const q = surveyQuestions[currentQuestionIndex];
+    let optionsHtml = '';
+    if (q.type === 'text') {
+        optionsHtml = `
+            <textarea class="feedback-textarea" id="survey-text" placeholder="Введите ответ..."></textarea>
+            <button class="send-btn" onclick="nextQuestion()">Далее</button>
+        `;
+    } else if (q.type === 'rating' || q.type === 'single') {
+        optionsHtml = q.options.map(opt => 
+            `<button class="source-btn" onclick="answerSingle('${q.id}', '${opt}')">${opt}</button>`
+        ).join('');
+    } else if (q.type === 'multiple') {
+        optionsHtml = q.options.map(opt => 
+            `<label style="display:block; margin:5px 0;">
+                <input type="checkbox" value="${opt}" onchange="toggleMultiple('${q.id}', '${opt}', this.checked)"> ${opt}
+            </label>`
+        ).join('');
+        optionsHtml += `<button class="send-btn" onclick="nextQuestion()">Далее</button>`;
+    }
+
+    const appDiv = document.getElementById('app');
+    appDiv.innerHTML = `
+        <div class="page">
+            <button class="back-btn" onclick="renderFeedbackPage()">← Назад</button>
+            <h3>Вопрос ${currentQuestionIndex+1} из ${surveyQuestions.length}</h3>
+            <p>${q.text}</p>
+            <div id="question-options">${optionsHtml}</div>
+        </div>
+    `;
+    currentPage = 'survey';
+}
+
+function answerSingle(qId, value) {
+    surveyAnswers[qId] = value;
+    nextQuestion();
+}
+
+function toggleMultiple(qId, value, checked) {
+    if (!surveyAnswers[qId]) surveyAnswers[qId] = [];
+    if (checked) {
+        surveyAnswers[qId].push(value);
+    } else {
+        surveyAnswers[qId] = surveyAnswers[qId].filter(v => v !== value);
+    }
+}
+
+function nextQuestion() {
+    const q = surveyQuestions[currentQuestionIndex];
+    if (q.type === 'text') {
+        const text = document.getElementById('survey-text')?.value;
+        if (!text) {
+            tg.showAlert('Пожалуйста, введите ответ.');
+            return;
+        }
+        surveyAnswers[q.id] = text;
+    } else if (q.type === 'multiple') {
+        if (!surveyAnswers[q.id] || surveyAnswers[q.id].length === 0) {
+            tg.showAlert('Выберите хотя бы один вариант.');
+            return;
+        }
+    }
+    currentQuestionIndex++;
+    renderQuestion();
+}
+
+function submitSurvey() {
+    tg.sendData(JSON.stringify({
+        action: 'survey',
+        answers: surveyAnswers
+    }));
+    tg.showAlert('✅ Спасибо за участие в опросе!');
+    renderFeedbackPage();
+}
+
+function renderAdminContact() {
+    const appDiv = document.getElementById('app');
+    appDiv.innerHTML = `
+        <div class="page">
+            <button class="back-btn" onclick="renderFeedbackPage()">← Назад</button>
+            <h2>📞 Связь с администратором</h2>
+            <textarea class="feedback-textarea" id="admin-message" placeholder="Напишите ваше сообщение..."></textarea>
+            <button class="send-btn" onclick="sendAdminMessage()">Отправить</button>
+        </div>
+    `;
+    currentPage = 'adminContact';
+}
+
+function sendAdminMessage() {
+    const message = document.getElementById('admin-message').value;
+    if (!message) {
+        tg.showAlert('Введите сообщение.');
+        return;
+    }
+    tg.sendData(JSON.stringify({
+        action: 'feedback',
+        message: message
+    }));
+    tg.showAlert('✅ Сообщение отправлено администратору.');
+    renderFeedbackPage();
+}
+
+// --- Кнопка "Назад" ---
 document.getElementById('back-btn').addEventListener('click', () => {
     if (currentPage === 'menu') {
         tg.close();
