@@ -10,67 +10,11 @@
 <body>
     <div class="container">
         <h1>🚢 Экспортный навигатор</h1>
-        
-        <!-- Виджет курсов валют -->
-        <div class="currency-card" id="currency-widget">
-            <h3>💱 Курсы валют ЦБ РФ</h3>
-            <div class="currency-row">
-                <span>🇺🇸 USD</span>
-                <span class="rate" id="usd-rate">загрузка...</span>
-            </div>
-            <div class="currency-row">
-                <span>🇪🇺 EUR</span>
-                <span class="rate" id="eur-rate">загрузка...</span>
-            </div>
-            <div class="currency-row">
-                <span>🇨🇳 CNY</span>
-                <span class="rate" id="cny-rate">загрузка...</span>
-            </div>
-            <p class="update-time" id="update-time"></p>
-        </div>
-
-        <!-- Сетка кнопок (4 ряда по 2) -->
-        <div class="menu-grid">
-            <button class="menu-btn" data-section="chat">
-                <span>👥 Чат экспортёров</span>
-                <span class="badge" id="badge-chat">0</span>
-            </button>
-            <button class="menu-btn" data-section="news">
-                <span>📰 Лента новостей</span>
-                <span class="badge" id="badge-news">0</span>
-            </button>
-            <button class="menu-btn" data-section="knowledge">
-                <span>📚 База знаний</span>
-                <span class="badge" id="badge-knowledge">0</span>
-            </button>
-            <button class="menu-btn" data-section="catalog">
-                <span>📦 Каталог продукции</span>
-                <span class="badge" id="badge-catalog">0</span>
-            </button>
-            <button class="menu-btn" data-section="logistics">
-                <span>🚚 Логистика</span>
-                <span class="badge" id="badge-logistics">0</span>
-            </button>
-            <button class="menu-btn" data-section="insurance">
-                <span>🛡️ Страхование</span>
-                <span class="badge" id="badge-insurance">0</span>
-            </button>
-            <button class="menu-btn" data-section="feedback">
-                <span>💬 Обратная связь</span>
-                <!-- без бейджа -->
-            </button>
-            <button class="menu-btn" data-section="ai">
-                <span>🤖 Экспортный ассистент</span>
-                <!-- без бейджа -->
-            </button>
-        </div>
-
-        <!-- Нижняя панель с кнопками -->
-        <div class="bottom-bar">
-            <button class="bottom-btn" id="back-btn">↩️ Назад</button>
-        </div>
+        <div id="app"></div>
     </div>
-
+    <div class="bottom-bar">
+        <button class="bottom-btn" id="back-btn">↩️ Назад</button>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

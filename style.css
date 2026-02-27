@@ -5,64 +5,23 @@ body {
     background: #f8f9fa;
     color: #202124;
 }
-
 .container {
     max-width: 600px;
     margin: 0 auto;
     padding-bottom: 70px;
 }
-
 h1 {
     font-size: 24px;
     text-align: center;
     margin-bottom: 20px;
     color: #1e3a8a;
 }
-
-.currency-card {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.currency-card h3 {
-    margin: 0 0 12px 0;
-    font-size: 18px;
-    color: #333;
-}
-
-.currency-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.currency-row:last-child {
-    border-bottom: none;
-}
-
-.rate {
-    font-weight: bold;
-    color: #1e3a8a;
-}
-
-.update-time {
-    margin: 8px 0 0 0;
-    font-size: 12px;
-    color: #666;
-    text-align: right;
-}
-
 .menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
 }
-
 .menu-btn {
     background: white;
     border: none;
@@ -73,23 +32,11 @@ h1 {
     color: #1e3a8a;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s;
 }
-
-.menu-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
 .menu-btn:active {
-    transform: translateY(0);
+    transform: scale(0.98);
 }
-
-.menu-btn.full-width {
-    grid-column: span 2;
-    background-color: #e8f0fe;
-}
-
 .bottom-bar {
     position: fixed;
     bottom: 0;
@@ -103,7 +50,6 @@ h1 {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
-
 .bottom-btn {
     background: none;
     border: none;
@@ -111,45 +57,79 @@ h1 {
     font-size: 14px;
     color: #1e3a8a;
     cursor: pointer;
-    border-radius: 8px;
 }
-
-.bottom-btn:hover {
-    background: #f0f0f0;
-}
-
 @media (prefers-color-scheme: dark) {
     body { background: #1a1a1a; color: #e0e0e0; }
-    .currency-card { background: #2d2d2d; }
     .menu-btn { background: #2d2d2d; color: #e0e0e0; }
-    .menu-btn.full-width { background: #1e3a8a; color: white; }
     .bottom-bar { background: #2d2d2d; }
-    .currency-row { border-bottom-color: #444; }
 }
-.menu-btn {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 12px;
+/* Дополнительные стили для страниц */
+.page {
+    margin-bottom: 20px;
 }
-
-.badge {
-    background-color: #ff4444;
+.back-btn {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.news-item {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.news-item a {
+    text-decoration: none;
+    color: #1e3a8a;
+    font-weight: 500;
+}
+.news-item p {
+    margin: 5px 0 0;
+    color: #666;
+}
+.search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+.feedback-textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+.send-btn {
+    background: #1e3a8a;
     color: white;
-    border-radius: 12px;
-    padding: 2px 8px;
-    font-size: 12px;
-    font-weight: bold;
-    min-width: 20px;
-    text-align: center;
-    margin-left: 8px;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
 }
-
-/* Адаптация для тёмной темы */
+.source-btn {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 5px 0;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
 @media (prefers-color-scheme: dark) {
-    .badge {
-        background-color: #ff6666;
-        color: #1a1a1a;
-    }
+    .news-item { background: #2d2d2d; }
+    .news-item a { color: #88aaff; }
+    .search-input, .feedback-textarea, .source-btn { background: #2d2d2d; color: white; border-color: #444; }
 }
