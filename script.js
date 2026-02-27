@@ -43,10 +43,10 @@ document.querySelectorAll('.menu-btn').forEach(button => {
             tg.openTelegramLink('https://t.me/Export_assistant_bot');
         } else if (section === 'feedback') {
             tg.openTelegramLink('https://t.me/exportNO_bot');
-        } else {
         } else if (section === 'news') {
-            tg.openTelegramLink('https://t.me/ВАШ_НОВОСТНОЙ_БОТ'); // замените на username вашего нового бота
-        }
+            // Ссылка на новостного бота
+            tg.openTelegramLink('https://t.me/NewsEXPORT_bot');
+        } else {
             tg.showAlert(`Раздел "${button.textContent}" будет доступен в ближайшее время`);
         }
     });
