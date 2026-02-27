@@ -87,7 +87,7 @@ function navigateTo(page) {
     }
 }
 
-// --- Раздел новостей (обновлённый) ---
+// --- Раздел новостей (обновлённый с резервными источниками) ---
 function renderNewsPage() {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = `
@@ -108,11 +108,15 @@ async function loadNews(source) {
     const newsDiv = document.getElementById('news-list');
     newsDiv.innerHTML = '⏳ Загрузка...';
 
-    let url;
+    let urls = [];
+    let displayFunc = null;
+
     if (source === 'exportcenter') {
-        url = 'https://api.rss2json.com/v1/api.json?rss_url=https://www.exportcenter.ru/press_center/rss/';
+        urls = ['https://api.rss2json.com/v1/api.json?rss_url=https://www.exportcenter.ru/press_center/rss/'];
+        displayFunc = displayNews;
     } else if (source === 'myexport') {
-        url = 'https://api.rss2json.com/v1/api.json?rss_url=https://myexport.exportcenter.ru/press_center/rss/';
+        urls = ['https://api.rss2json.com/v1/api.json?rss_url=https://myexport.exportcenter.ru/press_center/rss/'];
+        displayFunc = displayNews;
     } else if (source === 'nn') {
         // Демо-новости (можно заменить на реальный парсинг)
         const demoNews = [
@@ -122,68 +126,71 @@ async function loadNews(source) {
         displayNews(demoNews);
         return;
     } else if (source === 'telegram') {
-        // Используем RSSHub для Telegram-канала
-        url = 'https://rsshub.app/telegram/channel/rusexportnews.json';
+        // Несколько источников для Telegram-канала
+        urls = [
+            'https://rsshub.app/telegram/channel/rusexportnews.json',
+            'https://tg.i-c-a.su/json/rusexportnews',
+            // Добавьте другие, если знаете
+        ];
+        displayFunc = displayTelegramNews;
     }
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        // Обрабатываем данные в зависимости от источника
-        if (source === 'telegram') {
-            // Формат RSSHub: data.items - массив новостей
-            if (data.items && data.items.length > 0) {
-                displayTelegramNews(data.items);
-            } else {
-                newsDiv.innerHTML = 'Не удалось загрузить новости из Telegram.';
+    let success = false;
+    for (const url of urls) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) continue;
+            const data = await response.json();
+            if (data && (data.items || data.length > 0)) {
+                displayFunc(data);
+                success = true;
+                break;
             }
-        } else {
-            // Формат rss2json
-            if (data.status === 'ok') {
-                displayNews(data.items);
-            } else {
-                newsDiv.innerHTML = 'Не удалось загрузить новости.';
-            }
+        } catch (e) {
+            console.warn(`Ошибка загрузки из ${url}:`, e);
+            continue;
         }
-    } catch (e) {
-        console.error(e);
-        newsDiv.innerHTML = 'Ошибка загрузки. Проверьте интернет-соединение.';
+    }
+
+    if (!success) {
+        newsDiv.innerHTML = `
+            <p>😔 Не удалось загрузить новости. Попробуйте позже или перейдите в канал напрямую:</p>
+            <a href="https://t.me/rusexportnews" target="_blank" class="send-btn">📢 Перейти в канал</a>
+        `;
     }
 }
 
-function displayTelegramNews(items) {
+function displayTelegramNews(data) {
     const newsDiv = document.getElementById('news-list');
+    let items = [];
+    
+    // Определяем формат данных
+    if (data.items) {
+        // Формат RSSHub
+        items = data.items;
+    } else if (Array.isArray(data)) {
+        // Формат tg.i-c-a.su
+        items = data;
+    } else {
+        newsDiv.innerHTML = 'Неизвестный формат данных.';
+        return;
+    }
+
     let html = '';
     items.slice(0, 15).forEach(item => {
-        // Извлекаем текст поста, очищаем от лишних тегов
-        let description = item.description || item.content || '';
+        let title = item.title || 'Новость';
+        let description = item.description || item.message || item.text || '';
+        let link = item.link || item.original_url || `https://t.me/rusexportnews/${item.id || ''}`;
+        let date = item.pubDate || item.date || item.created_at || '';
+        
         description = description.replace(/<[^>]+>/g, '').substring(0, 200);
         if (description.length >= 200) description += '...';
         
-        // Ссылка на пост в Telegram
-        const link = item.link || `https://t.me/rusexportnews/${item.guid || ''}`;
-        
         html += `
             <div class="news-item">
-                <a href="${link}" target="_blank">${item.title || 'Новость'}</a>
+                <a href="${link}" target="_blank">${title}</a>
                 <p>${description}</p>
-                <small>${new Date(item.pubDate).toLocaleDateString('ru-RU')}</small>
-            </div>
-        `;
-    });
-    newsDiv.innerHTML = html;
-}
-
-// Существующая функция displayNews остаётся без изменений
-function displayNews(items) {
-    const newsDiv = document.getElementById('news-list');
-    let html = '';
-    items.slice(0, 10).forEach(item => {
-        html += `
-            <div class="news-item">
-                <a href="${item.link}" target="_blank">${item.title}</a>
-                <p>${item.description ? item.description.replace(/<[^>]+>/g, '').substring(0, 150) + '...' : ''}</p>
+                <small>${new Date(date).toLocaleDateString('ru-RU')}</small>
             </div>
         `;
     });
